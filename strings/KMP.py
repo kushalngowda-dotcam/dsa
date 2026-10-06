@@ -1,0 +1,42 @@
+def KMP(text: str, pattern: str) -> int:
+    # Step 1: Build LPS array
+    def LPS(pattern):
+        lps = [0] * len(pattern)
+        length = 0
+        i = 1
+        while i < len(pattern):
+            if pattern[i] == pattern[length]:
+                length += 1
+                lps[i] = length
+                i += 1
+            else:
+                if length != 0:
+                    length = lps[length - 1]
+                else:
+                    lps[i] = 0
+                    i += 1
+        return lps
+
+    lps = LPS(pattern)
+
+    # Step 2: Search
+    i = j = 0
+    while i < len(text):
+        if text[i] == pattern[j]:
+            i += 1
+            j += 1
+
+        if j == len(pattern):  # full match found
+            return i - j
+
+        elif i < len(text) and text[i] != pattern[j]:
+            if j != 0:
+                j = lps[j - 1]  # fallback using LPS
+            else:
+                i += 1
+
+    return -1  # not found
+
+
+# Example
+print(KMP("abxabcabcaby", "abcaby"))  # Output: 6
